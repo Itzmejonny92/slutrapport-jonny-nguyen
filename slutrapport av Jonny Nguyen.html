@@ -62,6 +62,7 @@
     html, body {
       margin: 0;
       padding: 0;
+      scroll-behavior: smooth;
       background:
         radial-gradient(circle at top right, rgba(181, 43, 63, 0.16), transparent 24%),
         radial-gradient(circle at top left, rgba(255, 111, 132, 0.06), transparent 22%),
@@ -96,6 +97,29 @@
 
     .theme-toggle:hover {
       transform: translateY(-1px);
+    }
+
+    .to-top {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      z-index: 20;
+      width: 52px;
+      height: 52px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--accent-strong);
+      font: 700 1.5rem/1 Georgia, "Times New Roman", serif;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .to-top:hover {
+      transform: translateY(-2px);
+      background: var(--accent-soft);
+      color: var(--accent);
     }
 
     a {
@@ -225,6 +249,67 @@
       font-size: 1rem;
       font-weight: 700;
     }
+
+    .attendance-card {
+      margin-top: 18px;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background:
+        linear-gradient(135deg, var(--panel-soft) 0%, var(--panel) 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .attendance-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .attendance-title {
+      margin: 0;
+      font-size: 1.08rem;
+      color: var(--accent-strong);
+    }
+
+    .attendance-rate {
+      font-size: 0.94rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .attendance-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .attendance-item {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--meta-bg);
+    }
+
+    .attendance-label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.76rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .attendance-value {
+      display: block;
+      margin-top: 6px;
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
 
     main {
       padding: 34px 56px 58px;
@@ -365,6 +450,10 @@
       .meta {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
+
+      .attendance-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 720px) {
@@ -403,6 +492,10 @@
       .timeline table {
         min-width: 620px;
       }
+
+      .attendance-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 560px) {
@@ -424,6 +517,10 @@
         grid-template-columns: 1fr;
       }
 
+      .attendance-grid {
+        grid-template-columns: 1fr;
+      }
+
       .toolbar {
         margin-bottom: 10px;
       }
@@ -431,6 +528,13 @@
       .theme-toggle {
         width: 100%;
         justify-content: center;
+      }
+
+      .to-top {
+        left: 12px;
+        bottom: 12px;
+        width: 48px;
+        height: 48px;
       }
 
       h1 {
@@ -454,9 +558,10 @@
   <div class="toolbar">
     <button class="theme-toggle" id="themeToggle" type="button" aria-label="Byt färgtema">Light mode</button>
   </div>
+  <button class="to-top" id="toTopButton" type="button" aria-label="Till toppen">↑</button>
   <article class="page">
     <header>
-      <div class="eyebrow">Individuell slutrapport</div>
+      <div class="eyebrow">Individuell slutrapport av Jonny Nguyen ITSX25</div>
       <h1>Min utveckling under kursen Molnsäkerhet och DevSecOps</h1>
       <p class="lead">
         Den här rapporten beskriver min resa från grundläggande Git- och Docker-arbete till en mer komplett
@@ -495,6 +600,34 @@
         <div class="meta-card">
           <span class="meta-key">Period</span>
           <span class="meta-value">Vecka 1-10</span>
+        </div>
+      </div>
+      <div class="attendance-card" aria-label="Närvarostatistik">
+        <div class="attendance-header">
+          <h2 class="attendance-title">Närvaro</h2>
+          <span class="attendance-rate">Närvarograd: 97%</span>
+        </div>
+        <div class="attendance-grid">
+          <div class="attendance-item">
+            <span class="attendance-label">Totalt</span>
+            <span class="attendance-value">31</span>
+          </div>
+          <div class="attendance-item">
+            <span class="attendance-label">Närvarande</span>
+            <span class="attendance-value">30</span>
+          </div>
+          <div class="attendance-item">
+            <span class="attendance-label">Sen</span>
+            <span class="attendance-value">0</span>
+          </div>
+          <div class="attendance-item">
+            <span class="attendance-label">Frånvarande</span>
+            <span class="attendance-value">0</span>
+          </div>
+          <div class="attendance-item">
+            <span class="attendance-label">Ursäktad</span>
+            <span class="attendance-value">1</span>
+          </div>
         </div>
       </div>
     </header>
@@ -1005,6 +1138,7 @@
       const storageKey = "jonny-report-theme";
       const root = document.documentElement;
       const button = document.getElementById("themeToggle");
+      const toTopButton = document.getElementById("toTopButton");
 
       function setTheme(theme) {
         root.setAttribute("data-theme", theme);
@@ -1022,6 +1156,30 @@
         const nextTheme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
         setTheme(nextTheme);
         localStorage.setItem(storageKey, nextTheme);
+      });
+
+      toTopButton.addEventListener("click", function () {
+        const startY = window.scrollY;
+        const duration = 700;
+        const startTime = performance.now();
+
+        function easeOutCubic(progress) {
+          return 1 - Math.pow(1 - progress, 3);
+        }
+
+        function step(currentTime) {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = easeOutCubic(progress);
+
+          window.scrollTo(0, Math.round(startY * (1 - eased)));
+
+          if (progress < 1) {
+            window.requestAnimationFrame(step);
+          }
+        }
+
+        window.requestAnimationFrame(step);
       });
     }());
   </script>
