@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DevSecOps slutrapport - Jonny Nguyen</title>
+  <style>
+    :root {
+      --bg: #140d10;
+      --paper: #20161a;
+      --ink: #f7f1f2;
+      --muted: #d5c1c5;
+      --line: #5a373f;
+      --accent: #b52b3f;
+      --accent-soft: #3a1a21;
+      --accent-strong: #ff6f84;
+      --warm: #302025;
+      --good: #1f2420;
+      --header-bg: #24171b;
+      --panel: #22161a;
+      --panel-soft: #24181c;
+      --panel-strong: #26171c;
+      --panel-alt: #201418;
+      --table-head: #2b1b20;
+      --table-cell: #21161a;
+      --meta-bg: rgba(36, 20, 25, 0.94);
+      --journey-border: #7a3944;
+      --journey-ink: #ffd0d7;
+      --success-border: #426747;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+    }
+
+    html[data-theme="light"] {
+      --bg: #f4f1ee;
+      --paper: #fffdfb;
+      --ink: #1d1718;
+      --muted: #67575b;
+      --line: #d8c8cb;
+      --accent: #b52b3f;
+      --accent-soft: #f4e7e9;
+      --accent-strong: #8f1f31;
+      --warm: #f3e8ea;
+      --good: #edf6ee;
+      --header-bg: #f6ecee;
+      --panel: #fff8f9;
+      --panel-soft: #fcf3f5;
+      --panel-strong: #f8ecef;
+      --panel-alt: #fff6f7;
+      --table-head: #f4e8eb;
+      --table-cell: #fffafb;
+      --meta-bg: rgba(255, 250, 251, 0.96);
+      --journey-border: #cc8e98;
+      --journey-ink: #7f2433;
+      --success-border: #92bc97;
+      --shadow: 0 18px 40px rgba(30, 18, 20, 0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background:
+        radial-gradient(circle at top right, rgba(181, 43, 63, 0.16), transparent 24%),
+        radial-gradient(circle at top left, rgba(255, 111, 132, 0.06), transparent 22%),
+        linear-gradient(180deg, #11090c 0%, var(--bg) 100%);
+      color: var(--ink);
+      font: 17px/1.82 Georgia, "Times New Roman", serif;
+    }
+
+    body {
+      padding: 28px 16px 48px;
+    }
+
+    .toolbar {
+      width: min(980px, 100%);
+      margin: 0 auto 12px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .theme-toggle {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font: 600 0.92rem/1.2 Georgia, "Times New Roman", serif;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-1px);
+    }
+
+    a {
+      color: var(--accent-strong);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    a:hover {
+      color: var(--accent);
+    }
+
+    .page {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 44px 56px 30px;
+      background: linear-gradient(180deg, var(--header-bg) 0%, var(--paper) 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 {
+      font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(2.1rem, 4.5vw, 3.1rem);
+      line-height: 1.1;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 30px;
+    }
+
+    .meta-card {
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--meta-bg);
+    }
+
+    .meta-card span {
+      display: block;
+    }
+
+    .link-menu {
+      position: relative;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    .link-menu summary {
+      list-style: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent-strong);
+    }
+
+    .link-menu summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .link-menu[open] summary {
+      margin-bottom: 8px;
+    }
+
+    .link-menu-panel {
+      min-width: 190px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+    }
+
+    .link-menu-panel a {
+      display: block;
+      margin: 6px 0;
+      text-decoration: none;
+    }
+
+    .link-menu-panel a:hover {
+      text-decoration: underline;
+    }
+
+    .meta-key {
+      color: var(--muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .meta-value {
+      margin-top: 4px;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    main {
+      padding: 34px 56px 58px;
+    }
+
+    h2 {
+      margin: 34px 0 14px;
+      font-size: 1.85rem;
+      line-height: 1.18;
+    }
+
+    h3 {
+      margin: 26px 0 10px;
+      font-size: 1.28rem;
+      color: var(--accent-strong);
+    }
+
+    p {
+      margin: 12px 0;
+    }
+
+    ul {
+      margin: 10px 0 14px 22px;
+      padding: 0;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    .summary-box,
+    .course-goals,
+    .quote,
+    .week-card,
+    .timeline {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .summary-box {
+      padding: 18px 20px;
+      background: var(--panel-soft);
+    }
+
+    .journey {
+      margin: 18px 0 8px;
+      padding: 16px 18px;
+      border: 1px dashed var(--journey-border);
+      border-radius: 10px;
+      background: var(--panel-alt);
+      color: var(--journey-ink);
+      font: 600 0.98rem/1.6 "Consolas", "Courier New", monospace;
+      white-space: pre-wrap;
+    }
+
+    .timeline {
+      margin-top: 18px;
+      overflow: hidden;
+    }
+
+    .timeline table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .timeline th,
+    .timeline td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .timeline tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .timeline th {
+      background: var(--table-head);
+      font-size: 0.92rem;
+    }
+
+    .timeline td {
+      background: var(--table-cell);
+    }
+
+    .weeks {
+      display: grid;
+      gap: 16px;
+    }
+
+    .week-card {
+      padding: 18px 20px;
+      background: var(--panel);
+    }
+
+    .week-card strong {
+      color: var(--accent-strong);
+    }
+
+    .quote {
+      margin: 18px 0;
+      padding: 20px 22px;
+      background: var(--panel-strong);
+      border-left: 4px solid var(--accent);
+      font-style: italic;
+    }
+
+    .course-goals {
+      padding: 18px 20px;
+      background: var(--good);
+      border-color: var(--success-border);
+    }
+
+    footer {
+      margin-top: 34px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 980px) {
+      .toolbar,
+      .page {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 880px) {
+      header,
+      main {
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+
+      .meta {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 14px 10px 30px;
+      }
+
+      header {
+        padding: 28px 20px 22px;
+      }
+
+      main {
+        padding: 24px 20px 32px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      h2 {
+        font-size: 1.55rem;
+      }
+
+      h3 {
+        font-size: 1.15rem;
+      }
+
+      .lead {
+        font-size: 1rem;
+      }
+
+      .timeline {
+        overflow-x: auto;
+      }
+
+      .timeline table {
+        min-width: 620px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      body {
+        padding: 10px 8px 24px;
+      }
+
+      .page {
+        border-radius: 12px;
+      }
+
+      header,
+      main {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .meta {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        margin-bottom: 10px;
+      }
+
+      .theme-toggle {
+        width: 100%;
+        justify-content: center;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .eyebrow {
+        font-size: 11px;
+      }
+
+      .week-card,
+      .summary-box,
+      .quote,
+      .course-goals {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Byt färgtema">Light mode</button>
+  </div>
+  <article class="page">
+    <header>
+      <div class="eyebrow">Individuell slutrapport</div>
+      <h1>Min utveckling under kursen Molnsäkerhet och DevSecOps</h1>
+      <p class="lead">
+        Den här rapporten beskriver min resa från grundläggande Git- och Docker-arbete till en mer komplett
+        DevSecOps-miljö med Kubernetes, Terraform, säkerhetskontroller, observability och incidenthantering.
+        Fokus ligger särskilt på
+        <a href="#kursmal-4">kursmål 4</a>,
+        <a href="#kursmal-10">10</a> och
+        <a href="#kursmal-11">11</a>:
+        SRE-metodik, bedömning av molnarkitektur och arbete med incidentrespons och post-mortem.
+      </p>
+      <div class="meta">
+        <div class="meta-card">
+          <span class="meta-key">Student</span>
+          <span class="meta-value">Jonny Nguyen</span>
+        </div>
+        <div class="meta-card">
+          <span class="meta-key">Team</span>
+          <details class="link-menu">
+            <summary>M4K Gang</summary>
+            <div class="link-menu-panel">
+              <a href="https://m4k-reflect.vercel.app" target="_blank" rel="noopener noreferrer">Projektwebb</a>
+              <a href="https://github.com/Mattej-Petrovic/M4K-Pipeline" target="_blank" rel="noopener noreferrer">GitHub-repo</a>
+            </div>
+          </details>
+        </div>
+        <div class="meta-card">
+          <span class="meta-key">Kurs</span>
+          <span class="meta-value">Molnsäkerhet och DevSecOps</span>
+        </div>
+        <div class="meta-card">
+          <span class="meta-key">Period</span>
+          <span class="meta-value">Vecka 1-10</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <h2>1. Inledning</h2>
+        <div class="summary-box">
+          <p>
+            Under kursen har jag steg för steg byggt upp en tydligare förståelse för hur utveckling, drift och
+            säkerhet hänger ihop i praktiken. Det började med GitHub, lokala labbar och enklare Docker-exempel,
+            men utvecklades vidare till arbete med GKE, Terraform, Trivy, SBOM, Gatekeeper, Grafana och
+            incidentrespons.
+          </p>
+          <p>
+            Min viktigaste insikt är att DevSecOps inte är en samling fristående verktyg. Det är ett arbetssätt där
+            kod, infrastruktur, säkerhet, övervakning och förbättring bildar en sammanhängande kedja.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h2>2. Översikt av min resa</h2>
+        <p>
+          Kursens progression blev tydlig vecka för vecka. Först lärde jag mig versionshantering, sedan
+          containerisering, därefter orkestrering och molndrift, och till sist hur säkerhet, observability och
+          incidenthantering måste byggas in från början.
+        </p>
+        <div class="journey">Git och GitHub -> Docker -> Docker Compose -> CI/CD -> Kubernetes -> GKE -> Terraform -> Hardening och policy -> Monitoring och SRE -> Incident response och GitOps</div>
+        <div class="timeline">
+          <table>
+            <thead>
+              <tr>
+                <th>Fas</th>
+                <th>Teknik</th>
+                <th>Vad jag lärde mig</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Grund</td>
+                <td>Git, GitHub, README, brancher</td>
+                <td>Ordning i repo och tydligt samarbete är grunden för allt senare arbete.</td>
+              </tr>
+              <tr>
+                <td>Containerisering</td>
+                <td>Docker, Compose</td>
+                <td>Applikationer behöver paketeras reproducerbart och isolerat för att kunna flyttas mellan miljöer.</td>
+              </tr>
+              <tr>
+                <td>Automation</td>
+                <td>GitHub Actions</td>
+                <td>Bygg, test och scanning ska ske automatiskt och inte vara beroende av manuell kontroll.</td>
+              </tr>
+              <tr>
+                <td>Moln och orkestrering</td>
+                <td>Kubernetes, GKE</td>
+                <td>Jag gick från lokala containrar till workloads i ett riktigt kluster med namespace och resurshantering.</td>
+              </tr>
+              <tr>
+                <td>IaC och säkerhet</td>
+                <td>Terraform, Trivy, Gatekeeper, SBOM</td>
+                <td>Infrastruktur och säkerhet måste vara versionshanterade, spårbara och återuppbyggbara.</td>
+              </tr>
+              <tr>
+                <td>Driftmognad</td>
+                <td>Prometheus, Grafana, SLO, post-mortem</td>
+                <td>Att ett system fungerar räcker inte. Det måste också vara mätbart, återhämtningsbart och begripligt vid fel.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>3. Vecka för vecka</h2>
+        <div class="weeks">
+          <section class="week-card">
+            <h3>Vecka 1 - GitHub, struktur och första arbetsflödet</h3>
+            <p>
+              Första delen av kursen handlade om att etablera ett fungerande repo, förstå GitHub-flödet och skapa
+              en stabil grund för kommande labbar. Det kan verka enkelt, men jag märkte snabbt att bra struktur i
+              README, brancher och commits minskar onödigt manuellt arbete längre fram.
+            </p>
+            <p>
+              Boiler Room-upplägget gav också en tydlig bild av kursens större mål: att bygga en komplett kedja från
+              kod till drift. Redan här blev det tydligt att DevSecOps inte bara handlar om teknik utan också om
+              samarbete, kommunikation och dokumentation.
+            </p>
+          </section>
+
+          <section class="week-card">
+            <h3>Vecka 2 - Docker och första containeriseringen</h3>
+            <p>
+              Under vecka 2 arbetade jag med Docker och lärde mig hur en applikation kan paketeras i en container.
+              Jag byggde enklare exempel lokalt, bland annat en statisk sida via Nginx och en liten Bash-app som
+              bedömde lösenordsstyrka utifrån längd. Det gav mig en praktisk känsla för hur images byggs och körs.
+            </p>
+            <p>
+              Den viktigaste lärdomen var att containerisering inte bara handlar om att få något att starta. Val av
+              basimage, hur filer kopieras och hur containern körs påverkar både säkerhet och framtida drift.
+            </p>
+          </section>
+
+          <section class="week-card">
+            <h3>Vecka 3 - Docker Compose och flera tjänster samtidigt</h3>
+            <p>
+              Vecka 3 byggde vidare på Docker genom att introducera Docker Compose. Här blev arkitekturtänket
+              tydligare eftersom flera tjänster skulle samverka: frontend, backend och databas. Jag fick bättre
+              förståelse för nätverk, volumes, miljövariabler och varför hälsokontroller är viktiga.
+            </p>
+            <p>
+              Jag arbetade också med container security redan här, bland annat genom att titta på container hardening,
+              non-root users, Trivy-scanning, resource limits och multi-stage builds. Det gjorde det tydligt för mig
+              att säkerhet måste finnas med redan på containernivå och inte först senare i pipelinen.
+            </p>
+            <p>
+              En viktig del av detta var att inte hårdkoda känslig konfiguration. Med det menar jag att lösenord,
+              API-nycklar, tokens och databasuppgifter inte ska skrivas direkt i koden, Dockerfiler eller
+              versionshanterade konfigurationsfiler. Sådan information bör i stället hanteras via miljövariabler,
+              secrets eller andra sätt att separera känslig data från själva applikationskoden.
+            </p>
+          </section>
+
+          <section class="week-card">
+            <h3>Vecka 4 - CI/CD och automatisering med GitHub Actions</h3>
+            <p>
+              När vi började arbeta med GitHub Actions förändrades mitt sätt att se på kvalitet. I stället för att
+              lita på manuell kontroll byggde jag förståelse för att pipeline ska verifiera kod varje gång något
+              pushas. Bygge, test och scanning behöver vara konsekventa och reproducerbara.
+            </p>
+            <p>
+              I teamets Boiler Room-arbete satte vi upp CI/CD med test, Docker-build och Trivy-scan i GitHub Actions.
+              Vi deployade också applikationen till Railway och behövde hantera merge-konflikter och en Trivy-varning
+              om att containern körde som root. När Dockerfilen ändrades till icke-root och scanningen verifierades
+              blev det tydligt för mig hur pipeline kan användas både för kvalitet och säkerhet.
+            </p>
+            <p>
+              En viktig del som också blev tydlig under vecka 4 var att workflows inte bara bygger kod, utan också kan
+              verifiera att applikationen faktiskt fungerar genom enklare health checks efter build och start. På så
+              sätt minskade risken att trasig kod eller en trasig container skulle gå vidare till senare steg i kedjan.
+            </p>
+            <p>
+              Jag tycker också att den här veckan hade en tydlig koppling till SRE-kultur. Automatisering handlar inte
+              bara om verktyg, utan också om arbetssätt. Att identifiera vad som saknas i pipelinen, upptäcka egna
+              kunskapsluckor och förbättra flödet steg för steg är en viktig del av att bygga kvalitet och
+              tillförlitlighet i teamets arbete.
+            </p>
+          </section>
+
+          <section class="week-card">
+            <h3>Vecka 5 - Kubernetes och nytt sätt att tänka på drift</h3>
+            <p>
+              Under vecka 5 gick vi från en mer containercentrerad arbetsmodell till att arbeta med Kubernetes som
+              plattform. Det var en tydlig omställning eftersom fokus inte längre låg på att bara starta en container,
+              utan på att beskriva önskat tillstånd med Deployments, Pods och Services. Jag behövde därför börja tänka
+              mer i termer av orkestrering, återhämtning och hur flera resurser samverkar i ett kluster.
+            </p>
+            <p>
+              Under den här veckan tränade jag praktiskt på centrala kubectl-kommandon för att skapa, inspektera och
+              felsöka resurser. Jag arbetade med Pods som minsta körbara enhet, Deployments som ansvarar för önskat
+              antal repliker och Services som ger stabil åtkomst till applikationer även när enskilda pods byts ut.
+              Det gjorde att jag började förstå skillnaden mellan tillfälliga containerinstanser och en plattform som
+              aktivt försöker upprätthålla ett definierat läge.
+            </p>
+            <p>
+              Jag fick också en tydligare bild av hur Kubernetes hanterar self-healing, skalning och
+              tjänstekommunikation. När repliker ökas eller minskas, eller när en pod kraschar och ersätts, fortsätter
+              tjänsten att fungera genom att trafiken går via Service-lagret i stället för till en enskild container.
+              Det här var ett viktigt steg för mig, eftersom jag började se hur resiliens och högre tillgänglighet kan
+              byggas in i plattformen i stället för att lösas manuellt varje gång något går fel.
+            </p>
+            <p>
+              En annan viktig del var att jag började arbeta mer metodiskt med observation och felsökning. Kommandon
+              som <strong>kubectl get</strong>, <strong>kubectl describe</strong>, <strong>kubectl logs</strong> och
+              <strong>kubectl exec</strong> gjorde det möjligt att förstå vad som faktiskt händer i klustret och inte
+              bara om något “ser ut att fungera”. Det gav mig ett tydligare driftperspektiv och lade grunden för de
+              senare veckorna med GKE, Terraform och incidenthantering.
+            </p>
+          </section>
+
+          <section class="week-card">
+            <h3>Vecka 6 - GKE och arbete i ett riktigt kluster</h3>
+            <p>
+              Vecka 6 var viktig för att arbetet gick från lokala miljöer till ett riktigt GKE-kluster. Jag kopplade
+              upp mig mot teamets namespace i WSL, verifierade resurser och arbetade med deployment i den delade miljön.
+            </p>
+            <p>
+              Det här innebar också en tydlig övergång från testmiljö till verkligare molnmiljö med kubeconfig,
+              registry access, namespaces och deployment i ett delat kluster. Här blev Shared Responsibility-modellen
+              mer konkret för mig: Google ansvarar för den underliggande infrastrukturen och kontrollplanet, medan vi i
+              teamet ansvarar för våra workloads, accesser, konfigurationer, secrets och säkerheten i det vi själva
+              deployar.
+            </p>
+            <p>
+              Ett konkret problem jag stötte på var att min deployment <strong>jonny-hello</strong> fastnade i
+              <strong>Pending</strong>. Genom <strong>kubectl describe pod</strong> såg jag att orsaken var
+              <strong>Insufficient cpu</strong> och kvotproblem i GCP. Jag löste det genom att sänka resource
+              requests och limits samt frigöra kapacitet. Efter det blev poden <strong>Running</strong>.
+            </p>
+            <p>
+              Jag byggde dessutom en egen Node.js-container, pushade den till Artifact Registry och verifierade den via
+              port-forward. När jag senare uppdaterade till en ny version och såg att tjänsten svarade med
+              <strong>version: v2</strong> blev det tydligt för mig hur verklig molndrift fungerar i praktiken.
+            </p>
+            <p>
+              Under vecka 6 blev också ConfigMaps och Secrets mer praktiska verktyg än rena teoribegrepp. Jag fick en
+              tydligare förståelse för skillnaden mellan vanlig konfiguration och skyddsvärd information. Det gjorde
+              deployment-arbetet mer realistiskt, eftersom jag behövde tänka på hur konfiguration ska separeras från
+              koden och hur känslig information ska hanteras säkert i klustret.
+            </p>
+          </section>
+
+          <section class="week-card">
+            <h3>Vecka 7 - Terraform och Infrastructure as Code</h3>
+            <p>
+              Vecka 7 gjorde stor skillnad i mitt sätt att se på infrastruktur. I stället för manuell
+              <strong>kubectl apply</strong>-hantering började jag arbeta deklarativt med Terraform, vilket gav bättre
+              spårbarhet, tydligare planering och enklare återställning.
+            </p>
+            <p>
+              I mitt labbarbete byggde jag en Terraform-konfiguration som skapade en Ubuntu 22.04-VM i GCP med
+              startup-hardening via <strong>ufw</strong>, <strong>fail2ban</strong> och
+              <strong>unattended-upgrades</strong>. Jag lade även till en daglig backup-policy, vilket kopplade
+              samman drift, säkerhet och återställning på ett konkret sätt.
+            </p>
+            <p>
+              Jag satte också upp en GitHub Actions-pipeline för Terraform med <strong>terraform fmt</strong>,
+              <strong>Trivy</strong> och <strong>terraform validate</strong>. Samtidigt lärde jag mig hur viktiga
+              autentisering och IAM-roller är i molnmiljö. Först blockerades <strong>terraform apply</strong> av
+              behörigheter och senare av kvotproblem för publik IP. När jag till slut löste båda problemen och fick
+              en grön körning blev det tydligt hur nära kopplade teknik, behörigheter och kostnader är.
+            </p>
+            <p>
+              Det som ytterligare fördjupade vecka 7 var att arbetet inte stannade vid en första fungerande
+              Terraform-konfiguration. Jag gick vidare till ett mer moget IaC-flöde genom att migrera state till ett
+              remote backend i GCS, parameterisera lösningen med variabler och <strong>terraform.tfvars</strong> samt
+              refaktorera delar av konfigurationen till återanvändbara moduler för Deployment och Service.
+            </p>
+            <p>
+              De här mer fördjupade delarna kommer framför allt från arbetet med <strong>Lab 1</strong>, där fokus låg
+              på Terraform, backup, CI/CD och säkrare hantering av infrastruktur i molnmiljö. Därför blev vecka 7 inte
+              bara en introduktion till Terraform, utan också ett tillfälle att arbeta mer praktiskt och strukturerat
+              med Infrastructure as Code på en nivå som gick längre än de vanliga veckomomenten.
+            </p>
+            <p>
+              I Lab 1 byggde jag bland annat en Terraform-konfiguration som provisionerade en
+              <strong>Ubuntu 22.04-VM</strong> i GCP med <strong>e2-micro</strong>, labels, tags och ett startup-script
+              som hardenade maskinen direkt vid uppstart med <strong>ufw</strong>, <strong>fail2ban</strong> och
+              <strong>unattended-upgrades</strong>. Jag lade också till en daglig backup-policy med
+              <strong>google_compute_resource_policy</strong>, vilket gjorde att veckan inte bara handlade om att skapa
+              resurser, utan också om säker grundkonfiguration och återställningsbarhet.
+            </p>
+            <p>
+              En viktig lärdom här var att den verkliga blockeraren ofta inte var Terraform-syntax utan
+              autentisering, IAM och state-hantering. Jag såg tydligt att en giltig token inte automatiskt innebär att
+              rätt behörigheter finns för att läsa bucket eller förändra resurser. Det gjorde vecka 7 mer realistisk,
+              eftersom fokus flyttades från bara kod till hela kedjan runt säker drift i molnet.
+            </p>
+            <p>
+              Jag stötte också på flera praktiska blockerare runt GitHub och arbetsmiljön. Bland annat behövde jag lösa
+              att GitHub inte längre accepterar vanligt lösenord över HTTPS, att <strong>gh</strong> behövde fungera i
+              WSL och att repots default branch låg på <strong>master</strong> medan min workflow utgick från
+              <strong>main</strong>. När jag väl hade rätt branch-struktur och en konsekvent CI-konfiguration blev hela
+              flödet betydligt stabilare.
+            </p>
+            <p>
+              Jag arbetade också med <strong>moved blocks</strong> för att kunna refaktorera utan att orsaka onödiga
+              <strong>destroy/recreate</strong>-ändringar. Tillsammans med kontinuerlig kontroll via
+              <strong>terraform plan</strong> gjorde det att jag kunde verifiera att kod och verkligt tillstånd låg i
+              linje med varandra. Att slutläget blev <strong>0 to add, 0 to change, 0 to destroy</strong> visade för
+              mig att infrastrukturen var stabil, spårbar och kontrollerad, vilket är en viktig skillnad jämfört med
+              mer manuell hantering.
+            </p>
+            <p>
+              Från Lab 1 tog jag också med mig hur viktigt det är att verifiera lösningen i mer än en miljö. Efter att
+              först ha fått <strong>terraform apply</strong> att fungera lokalt med rätt credentials arbetade jag vidare
+              med GitHub Actions så att även CI kunde köra en manuell <strong>apply</strong> via
+              <strong>workflow_dispatch</strong>. Genom att importera befintliga resurser till jobbets temporära state
+              undveks dubbletter, och till slut fick jag en helt grön körning där <strong>lint</strong>,
+              <strong>security</strong>, <strong>validate</strong>, <strong>plan</strong> och <strong>apply</strong>
+              gick igenom. Det gjorde vecka 7 till ett tydligt steg från teori till verifierad infrastruktur i både
+              lokal miljö och CI.
+            </p>
+          </section>
+
+          <section class="week-card">
+            <h3>Vecka 8 - Hardening, scanning och policy enforcement</h3>
+            <p>
+              Vecka 8 var den tydligaste säkerhetsveckan i kursen. Jag började med en medvetet sårbar Flask-applikation
+              byggd på <strong>python:3.8</strong> och skannade den med Trivy. Resultatet visade en mycket hög risknivå
+              med <strong>1299 HIGH</strong> och <strong>181 CRITICAL</strong> sårbarheter.
+            </p>
+            <p>
+              Jag byggde först den sårbara versionen som <strong>my-app:vulnerable</strong> för att få ett tydligt
+              utgångsläge. Det gav mig inte bara en teoretisk förståelse av scanning, utan ett konkret före- och
+              efterläge där jag kunde se hur stor skillnad rätt containerkonfiguration faktiskt gör.
+            </p>
+            <p>
+              Därefter härdade jag containern steg för steg genom att byta till
+              <strong>python:3.12-slim-bookworm</strong>, flytta beroenden till
+              <strong>requirements.txt</strong>, använda <strong>--no-cache-dir</strong> vid installation, lägga till
+              <strong>WORKDIR</strong>, <strong>EXPOSE</strong> och <strong>HEALTHCHECK</strong> samt köra
+              applikationen som en icke-root-användare. Målet var både att minska attackytan och att göra containern
+              tydligare ur driftperspektiv.
+            </p>
+            <p>
+              När jag skannade den härdade imagen <strong>my-app:hardened</strong> igen hade storleken sjunkit från
+              <strong>1.46 GB</strong> till <strong>206 MB</strong>, och allvarliga sårbarheter hade minskat till
+              <strong>2 HIGH</strong> och <strong>2 CRITICAL</strong>. Det var en väldigt tydlig förbättring och visade
+              för mig hur val av basimage, paketversioner och runtime-konfiguration direkt påverkar risknivån.
+            </p>
+            <p>
+              Jag genererade också en SBOM i <strong>CycloneDX</strong>-format för den härdade imagen, sparad som
+              <strong>sbom.json</strong>. Den gav en strukturerad förteckning över vilka komponenter och paket som
+              faktiskt fanns i containern. För mig blev det viktigt eftersom SBOM inte bara hjälper vid dokumentation,
+              utan också gör det lättare att senare förstå vad som faktiskt deployats och att snabbare spåra om en ny
+              sårbarhet upptäcks i ett beroende.
+            </p>
+            <p>
+              Jag arbetade också med Gatekeeper i Mission Control, där jag inte använde vanlig
+              <strong>kubectl apply</strong> eftersom policyresurserna är kluster-scope och kräver högre rättigheter.
+              Jag verifierade vilka constraints som redan var aktiva i namespace <strong>m4k-gang</strong>, granskade
+              policy violations och testade sedan skillnaden mellan en osäker <strong>Bad Pod</strong> och en härdad
+              <strong>Hardened Pod</strong>.
+            </p>
+            <p>
+              Resultatet blev att den dåliga poden blockerades av flera policies, medan den härdade poden tilläts med
+              endast en varning om default service account. Det gjorde policy enforcement mycket konkret för mig,
+              eftersom jag kunde se hur säkerhetskrav kan flyttas tidigare i flödet och stoppa osäkra resurser innan
+              de ens hinner skapas i klustret.
+            </p>
+            <p>
+              Jag såg också över repot inför inlämning och verifierade att stora exporterade image-filer ignorerades
+              via <strong>.gitignore</strong> och att inga uppenbara hemligheter eller känsliga filer låg öppna för
+              commit. Det här förstärkte för mig att säkerhetsarbete inte bara handlar om det som körs i containern,
+              utan även om hur projektet hanteras i repo och pipeline.
+            </p>
+            <p>
+              Min egen reflektion från labben var att container-säkerhet inte bara handlar om sårbarheter, utan också
+              om drift, till exempel health checks, tydligare runtime-beteende och bättre spårbarhet i det som faktiskt
+              deployas. Vecka 8 gav därför en bredare förståelse av säkerhet som både teknisk kontroll, arbetssätt och
+              dokumentation.
+            </p>
+            <p>
+              Även här kom flera av de mer fördjupade momenten från arbetet med <strong>Lab 2</strong>, där jag fick
+              gå djupare in i container hardening, SBOM, scanning, policy enforcement och säkerhetsreflektion. Det gör
+              att vecka 8 i rapporten också speglar labbarbetet och inte bara de ordinarie kursmomenten.
+            </p>
+          </section>
+
+          <section class="week-card">
+            <h3>Vecka 9 - SRE, observability och chaos engineering</h3>
+            <p>
+              Under vecka 9 gick fokus från säkerhet till tillförlitlighet. Jag arbetade med SRE-begrepp som
+              <strong>SLI</strong>, <strong>SLO</strong>, <strong>SLA</strong>, <strong>error budget</strong> och
+              <strong>toil</strong>. Det hjälpte mig att se att ett system inte bara ska vara säkert, utan också ge
+              en bra upplevelse för användaren.
+            </p>
+            <p>
+              Prometheus och Grafana gav ett sätt att mäta tillståndet i systemet med CPU, minne, pod restarts och
+              tillgänglighet. Samtidigt visade chaos engineering hur viktigt det är att inte bara hoppas att systemet
+              återhämtar sig, utan faktiskt mäta det. MTTR blev därmed ett praktiskt mått på resiliens i stället för
+              bara ett begrepp i teorin.
+            </p>
+          </section>
+
+          <section class="week-card">
+            <h3>Vecka 10 - Incident response, post-mortem och GitOps</h3>
+            <p>
+              Vecka 10 knöt ihop kursen genom incidenthantering och GitOps. Här blev det tydligt att monitoring,
+              automation och säkerhet måste fungera tillsammans när något går fel. Roller som Incident Commander,
+              responder och scribe visar att även ett tekniskt problem behöver ett tydligt arbetssätt.
+            </p>
+            <p>
+              ArgoCD och GitOps-tänket gjorde också en viktig poäng tydlig: Git ska vara den enda sanningskällan för
+              miljön. När verkligt klusterläge och deklarerad konfiguration hålls synkade minskar risken för dold drift,
+              manuella speciallösningar och svår felsökning.
+            </p>
+            <p>
+              För mig blev detta en naturlig avslutning på kursen eftersom det samlade allt från tidigare veckor:
+              kod, infrastruktur, säkerhet, observability, återhämtning och förbättringsarbete efter incidenter.
+            </p>
+          </section>
+        </div>
+      </section>
+
+      <section id="kursmal-4">
+        <h2>4. Kursmål 4 - SRE-metodik och systemresiliens</h2>
+        <p>
+          Ett av de viktigaste kursmålen för mig har varit att förstå hur SRE-metodik kopplas till riktig drift.
+          Tidigare tänkte jag mest i termer av om en applikation startar eller inte. Under kursen lärde jag mig att
+          det inte räcker. Ett system måste gå att mäta, följa upp och förbättra.
+        </p>
+        <p>
+          Med hjälp av SLI och SLO blir kvaliteten konkret. Availability, latency och error rate går då att koppla
+          till tydliga mål i stället för magkänsla. Error budgets gör dessutom att teamet får ett sätt att väga
+          utvecklingstakt mot stabilitet. Jag ser det som en av kursens största styrkor, eftersom det flyttar fokus
+          från reaktiv felsökning till planerad driftsäkerhet.
+        </p>
+        <p>
+          Kubernetes bidrog också direkt till resiliens genom self-healing, repliker, health checks och kontrollerade
+          uppdateringar. När detta kombineras med Prometheus, Grafana och chaos engineering blir resiliens något som
+          går att observera i praktiken. För mig gjorde det stor skillnad att kursen inte stannade vid teori, utan att
+          vi faktiskt arbetade med recovery, mätetal och hur MTTR kan användas som ett konkret mått på återhämtning.
+        </p>
+      </section>
+
+      <section id="kursmal-10">
+        <h2>5. Kursmål 10 - Bedömning av molnarkitektur</h2>
+        <p>
+          Kursen gjorde det tydligt att en molnarkitektur måste bedömas ur flera perspektiv samtidigt: kostnad,
+          säkerhet och compliance. Det räcker inte att ett system fungerar tekniskt om det är onödigt dyrt, svårt att
+          granska eller osäkert att drifta.
+        </p>
+        <h3>Säkerhet</h3>
+        <p>
+          Säkerhetsmässigt blev arkitekturen starkare ju längre kursen gick. Trivy, SBOM, Cosign, RBAC,
+          Network Policies, Gatekeeper och Falco representerar olika lager av skydd. Det gav mig en tydlig förståelse
+          för defense in depth och varför ingen enskild kontroll räcker ensam.
+        </p>
+        <h3>Kostnad</h3>
+        <p>
+          Kostnadsperspektivet blev tydligt när resurser i GKE inte räckte till och när GCP-kvoter blockerade
+          deployment. Jag såg att resursgränser, antal repliker, monitoring-stack och val av publik IP påverkar både
+          tekniska möjligheter och kostnader. Ett praktiskt exempel var att min Terraform-labb blockerades av
+          <strong>IN_USE_ADDRESSES exceeded</strong>, vilket jag löste genom att ta bort publik IP från VM:n.
+        </p>
+        <h3>Compliance och spårbarhet</h3>
+        <p>
+          Terraform, GitHub Actions och GitOps gav en mycket bättre audit trail än manuell hantering. Policy-as-code
+          och versionshanterad infrastruktur gör det lättare att visa hur miljön är tänkt att se ut och vilka
+          kontroller som faktiskt används. Här ser jag också tydlig koppling till Linux-hardening och CIS-tänk:
+          säkerhetsarbete måste kunna granskas och upprepas, inte bara göras en gång. Det är också här jag tycker att
+          kursen blev mest verklighetsnära, eftersom tekniska lösningar behövde kunna motiveras både ur säkerhets- och
+          granskningsperspektiv.
+        </p>
+      </section>
+
+      <section id="kursmal-11">
+        <h2>6. Kursmål 11 - Incident response och post-mortem</h2>
+        <p>
+          Incidenthantering blev för mig den del där kursens tidigare moment verkligen möttes. Om övervakning saknas
+          märks incidenter för sent. Om säkerhetskontroller saknas blir orsaken svårare att förstå. Om infrastrukturen
+          inte är deklarativ blir återställning långsam och osäker.
+        </p>
+        <p>
+          Därför ser jag incident response som mer än en sista veckas uppgift. Det är ett test på hur mogen hela
+          miljön är. Roller som Incident Commander och scribe skapar ordning under press, medan blameless post-mortems
+          gör att fokus hamnar på systemets svagheter i stället för på individer.
+        </p>
+        <p>
+          Jag upplever att post-mortem-tänket också passar bra ihop med resten av DevSecOps. Samma kultur som gör att
+          man automatiserar tester, skannar images och dokumenterar infrastruktur gör det naturligt att även lära av
+          fel på ett strukturerat sätt. För mig blev det tydligt att incidenthantering egentligen börjar långt innan
+          själva incidenten, genom hur bra övervakning, dokumentation och återställningsrutiner som redan finns på plats.
+        </p>
+      </section>
+
+      <section>
+        <h2>7. Min personliga reflektion</h2>
+        <div class="quote">
+          Den största lärdomen för mig är att ett system inte är moget bara för att det går att köra. Det blir moget
+          först när det också går att förstå, övervaka, säkra, återställa och förbättra.
+        </div>
+        <p>
+          I början av kursen fokuserade jag mest på att få verktyg och kommandon att fungera. Ju längre kursen gick,
+          desto tydligare blev det att det egentliga målet var att förstå sambanden mellan utveckling, drift och
+          säkerhet. När jag arbetade med GKE, Terraform och container-hardening blev det tydligt hur snabbt små
+          konfigurationsval kan få stora konsekvenser för både säkerhet och stabilitet.
+        </p>
+        <p>
+          Jag tar särskilt med mig tre saker från kursen. För det första att automation minskar toil och gör kvalitet
+          mer konsekvent. För det andra att säkerhet måste byggas in tidigt i kedjan och inte läggas på i slutet.
+          För det tredje att incidenter och fel inte bara är problem utan också viktiga tillfällen att förbättra
+          systemet. Jag tycker också att kursen har gjort mig tryggare i att felsöka, läsa loggar, tolka verktygens
+          output och arbeta mer metodiskt när något inte fungerar direkt.
+        </p>
+      </section>
+
+      <section>
+        <h2>8. Slutsats</h2>
+        <p>
+          Under vecka 1 till 10 gick jag från enklare lokala övningar till att arbeta med en mer komplett och
+          verklighetsnära DevSecOps-miljö. Jag har arbetat med versionshantering, containerisering, Kubernetes,
+          molndrift, Terraform, scanning, hardening, policy enforcement, observability och incidenthantering.
+        </p>
+        <p>
+          Jag bedömer därför att rapporten tydligt täcker kursmål 4, 10 och 11. Jag kan koppla SRE-metodik till
+          resiliens och mätbar drift, jag kan resonera om molnarkitektur ur säkerhets-, kostnads- och
+          compliance-perspektiv, och jag förstår hur incidentrespons och blameless post-mortem används för att skapa
+          bättre system över tid.
+        </p>
+        <div class="course-goals">
+          <p><strong>Kursmål 4:</strong> Jag beskriver hur SRE-metodik, SLI/SLO, error budgets, monitoring och chaos engineering bidrar till systemresiliens.</p>
+          <p><strong>Kursmål 10:</strong> Jag bedömer molnarkitekturen utifrån säkerhet, kostnad, compliance, IAM, kvoter, resurser och spårbarhet i GKE och Terraform.</p>
+          <p><strong>Kursmål 11:</strong> Jag kopplar incidentrespons, roller, observability och blameless post-mortem till ett mer professionellt driftarbete.</p>
+        </div>
+      </section>
+
+      <footer>
+        Rapportens innehåll baseras på kursmaterial för vecka 1-10, individuella labbrapporter, lärarens data samt dokumentation och reflektioner från genomförda moment i kursen.
+      </footer>
+    </main>
+  </article>
+  <script>
+    (function () {
+      const storageKey = "jonny-report-theme";
+      const root = document.documentElement;
+      const button = document.getElementById("themeToggle");
+
+      function setTheme(theme) {
+        root.setAttribute("data-theme", theme);
+        button.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+      }
+
+      const savedTheme = localStorage.getItem(storageKey);
+      if (savedTheme === "light" || savedTheme === "dark") {
+        setTheme(savedTheme);
+      } else {
+        setTheme("dark");
+      }
+
+      button.addEventListener("click", function () {
+        const nextTheme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        setTheme(nextTheme);
+        localStorage.setItem(storageKey, nextTheme);
+      });
+    }());
+  </script>
+</body>
+</html>
