@@ -1,0 +1,3 @@
+Här är min individuella slutrapport för kursen Molnsäkerhet och DevSecOps.
+
+Rapporten finns i HTML-format i repot och sammanfattar mitt arbete under vecka 1-10 med fokus på SRE-metodik, molnarkitektur samt incident response och post-mortem.
